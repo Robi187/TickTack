@@ -3,9 +3,14 @@ services:
     build: ./frontend
     container_name: ticktack-frontend
     ports:
-      - "8081:5173"     
+      - "8001:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+      - ./certs:/certs        # Zertifikate ins Container-FileSystem mounten
+    command: npm run dev -- --host
     environment:
-      - VITE_BACKEND_URL=http://backend:5000
+      - VITE_BACKEND_URL=https://localhost:5000
 
   backend:
     build: ./backend
@@ -15,6 +20,9 @@ services:
     environment:
       - NODE_ENV=development
       - DB_HOST=db
+    command: node server.js
+    volumes:
+      - ./certs:/certs
 
   db:
     image: mysql:5.7

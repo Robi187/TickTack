@@ -1,15 +1,20 @@
+const fs = require("fs");
+const https = require("https");
 const express = require("express");
-const cors = require("cors");
 
 const app = express();
-
-app.use(cors());
 app.use(express.json());
 
 app.get("/", (req, res) => {
-  res.send("Backend läuft erfolgreich!");
+  res.send("Backend via HTTPS läuft!");
 });
 
-app.listen(5000, () => {
-  console.log("Backend gestartet auf Port 5000");
+https.createServer(
+  {
+    key: fs.readFileSync("/certs/localhost+2-key.pem"),
+    cert: fs.readFileSync("/certs/localhost+2.pem"),
+  },
+  app
+).listen(5000, () => {
+  console.log("HTTPS Backend läuft auf https://localhost:5000");
 });
