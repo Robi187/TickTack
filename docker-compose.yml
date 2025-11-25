@@ -1,0 +1,35 @@
+services:
+  frontend:
+    build: ./frontend
+    container_name: ticktack-frontend
+    ports:
+      - "8081:5173"      # Vite läuft IMMER auf 5173 im Container
+    environment:
+      - VITE_BACKEND_URL=http://backend:5000
+    # KEINE VOLUMES – sonst zerstören wir die node_modules
+
+  backend:
+    build: ./backend
+    container_name: ticktack-backend
+    ports:
+      - "5000:5000"
+    environment:
+      - NODE_ENV=development
+      - DB_HOST=db
+    # KEINE VOLUMES – backend/node_modules würde gelöscht
+
+  db:
+    image: mysql:5.7
+    container_name: ticktack-db
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: ticktack
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+volumes:
+  mysql-data:
