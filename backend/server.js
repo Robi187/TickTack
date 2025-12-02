@@ -1,26 +1,29 @@
-// backend/server.js
 const express = require("express");
 const cors = require("cors");
+const mysql = require("mysql2/promise");
 
 const app = express();
-const PORT = process.env.PORT || 4000;
-
 app.use(cors());
 app.use(express.json());
 
-// Beispiel-Route (alle deine API-Routen kommen hier rein)
-app.get("/api/hello", (req, res) => {
-  res.json({ message: "Hallo aus dem Node-Backend 👋" });
+const dbConfig = {
+  host: process.env.DB_HOST || "localhost",
+  user: process.env.DB_USER || "root",
+  password: process.env.DB_PASSWORD || "",
+  database: process.env.DB_NAME || "myapp"
+};
+
+// DB Verbindung testen
+app.get("/api/db-test", async (req, res) => {
+  try {
+    const conn = await mysql.createConnection(dbConfig);
+    const [rows] = await conn.query("SELECT 1 + 1 AS result");
+    res.json({ success: true, result: rows[0].result });
+  } catch (err) {
+    console.error("DB ERROR:", err); // <-- WICHTIG!
+    res.status(500).json({ success: false, error: err.message });
+  }
 });
 
-// Beispiel: Todos
-app.get("/api/todos", (req, res) => {
-  res.json([
-    { id: 1, title: "Docker Setup bauen", done: false },
-    { id: 2, title: "Nuxt-Frontend anschließen", done: false },
-  ]);
-});
 
-app.listen(PORT, () => {
-  console.log(`Backend läuft auf Port ${PORT}`);
-});
+app.listen(4000, () => console.log("Backend läuft auf Port 4000"));
