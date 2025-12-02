@@ -25,5 +25,16 @@ app.get("/api/db-test", async (req, res) => {
   }
 });
 
+app.post("/api/login", async (req, res) => {
+  const { username, password } = req.body;
+
+  // SIMPLE Beispiel: echter Login kommt später (Datenbank)
+  if (username === "admin" && password === "1234") {
+    return res.json({ success: true, token: "FAKE-TOKEN-ABC123" });
+  }
+
+  return res.status(401).json({ success: false, message: "Invalid credentials" });
+});
+
 
 app.listen(4000, () => console.log("Backend läuft auf Port 4000"));
