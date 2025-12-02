@@ -1,17 +1,38 @@
 services:
   backend:
     build: ./backend
-    container_name: my-backend
+    container_name: backend
     ports:
       - "4000:4000"
+    depends_on:
+      - db
+    environment:
+      - DB_HOST=db
+      - DB_USER=root
+      - DB_PASSWORD=ttidbpva
+      - DB_NAME=TT_DB
 
   frontend:
     build: ./frontend
-    container_name: my-frontend
+    container_name: frontend
     ports:
       - "3000:3000"
     depends_on:
       - backend
     environment:
-      # Nuxt bekommt die URL des Backends im Docker-Netzwerk
       - NUXT_PUBLIC_API_BASE=http://backend:4000
+
+  db:
+    image: mysql:8.0
+    container_name: my-database
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ttidbpva
+      MYSQL_DATABASE: TT_DB
+    ports:
+      - "3306:3306"
+    volumes:
+      - dbdata:/var/lib/mysql
+
+volumes:
+  dbdata:
